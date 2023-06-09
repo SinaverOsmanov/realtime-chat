@@ -8,8 +8,8 @@ type getGoogleCredentialsTypeReturn = {
     clientSecret: string
 }
 
-function getGoogleCredentials():getGoogleCredentialsTypeReturn {
-    const clientId = process.env.GOOGLE_CLIENT_ID
+function getGoogleCredentials(): getGoogleCredentialsTypeReturn {
+    const clientId = process.env.GOOGLE_CLIENT_ID 
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET
 
     if(!clientId || clientId.length === 0) {
@@ -26,6 +26,7 @@ function getGoogleCredentials():getGoogleCredentialsTypeReturn {
 
 export const authOptions: NextAuthOptions = {
     adapter: UpstashRedisAdapter(db),
+    secret: process.env.NEXTAUTH_SECRET,
     session: {
         strategy: 'jwt'
     },
@@ -35,12 +36,12 @@ export const authOptions: NextAuthOptions = {
     providers: [
         GoogleProvider({
             clientId: getGoogleCredentials().clientId,
-            clientSecret: getGoogleCredentials().clientSecret
+            clientSecret: getGoogleCredentials().clientSecret,
         })
     ],
     callbacks: {
         async jwt({ token, user }) {
-            const dbUser = (await db.get(`user: ${token.id}`)) as User | null
+            const dbUser = (await db.get(`user:${token.id}`)) as User | null
         
             if(!dbUser) {
                 token.id = user!.id
